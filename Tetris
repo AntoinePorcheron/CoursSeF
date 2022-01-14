@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan  5 19:57:03 2022
+@author: Marion, Sébastien et Sébastien
+"""
+
+# SEF : du 12-01-2022 au 13-01-2022
+import pygame # par la même occasion cela importe pygame.locals dans l'espace de nom de Pygame
+import ctypes # An included library with Python install.   
+import numpy as np
+from numpy import zeros,array
+
+def Create_Tableau(X, Y,Type):
+    TAB_P = zeros((X,Y), Type)
+    dim = TAB_P.shape
+    print ("Création TAB_P vide OK")
+    print (TAB_P)
+    print("nb de lignes de TAB_P = " + str(dim[0]))
+    print("nb de colonnes de TAB_P = " + str(dim[1]))
+    return TAB_P
+
+def Ajout_Val_Tableau(TAB_P, X, Y, Valeur):
+    TAB_P[X,Y] = Valeur
+    print (TAB_P)
+    print ("Ajout Valeur")
+
+Tableau_Principal = Create_Tableau(20 ,10, str)
+Ajout_Val_Tableau(Tableau_Principal, 1 ,1, "X")
+
+pygame.init()
+ecran = pygame.display.set_mode((300, 200))
+continuer = True
+
+while continuer:
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            res = ctypes.windll.user32.MessageBoxW(0, "Etes-vous sur ?", "Fermeture", 4)
+            print ("res = " + str(res) + " values")
+            if res == 6:
+                continuer = False
+            else:
+                continuer = True
+pygame.quit()
+
+# fSEF : du 12-01-2022 au 13-01-2022
