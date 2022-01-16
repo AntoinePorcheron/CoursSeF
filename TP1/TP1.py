@@ -2,33 +2,37 @@
 
 
 
-
-###### début de la construction de l'arbre binaire ###########
-from binarytree import Node
-
 class Arbre():
     def __init__(self,nom=''):
         self.label = nom
         self.G = None
         self.D = None
-    def printValues(self):
+
+    def PrintValues(self):
         print(self.label)
         if self.G:
-            self.G.printValues()
+            self.G.PrintValues()
         if self.D:
-            self.D.printValues()
+            self.D.PrintValues()
+
+    def EcritValues(self, Res_Ret = ""):
+        print(self.label)
+        match self.label :
+            case "J":   Res_Ret = "J(" + self.D.EcritValues() + ")"
+            case "A":   Res_Ret = "(" + self.G.EcritValues() + ") A (" + self.D.EcritValues() + ")"
+            case "V":   Res_Ret = "(" + self.G.EcritValues() + ") V (" + self.D.EcritValues() + ")"
+            case _  :   Res_Ret = self.label
+        return Res_Ret
 
 T = Arbre('A')
 T.G = Arbre('X1')
 T.D = Arbre('J')
-T.G.D = Arbre('V')
-T.G.D.G = Arbre('X2')
-T.G.D.D = Arbre('J')
-T.G.D.G = Arbre('X3')
-T.printValues()
+T.D.D = Arbre('V')
+T.D.D.G = Arbre('X2')
+T.D.D.D = Arbre('J')
+T.D.D.D.D = Arbre('X3')
 
-######fin de la construction de l'arbre binaire###########
-
-
-
+T.PrintValues()
+Res=T.EcritValues()
+print("Res = " + Res)
 
