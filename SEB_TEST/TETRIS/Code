@@ -1,0 +1,492 @@
+# import au  hasard
+import  pygame
+
+"""
+Grille 10x20
+play_height = 2 * play_width
+tetriminos :
+    0 - S - vert
+    1 - Z - rouge
+    2 - I - cyan
+    3 - O - jaune
+    4 - J - bleu
+    5 - L - orange
+    6 - T - violet
+"""
+
+pygame . police . initialisation ()
+
+# variables globales
+
+col  =  10   # 10 colonnes
+ligne  =  20   # 20 lignes
+s_width  =  800   # largeur de fenêtre
+s_height  =  750   # hauteur de fenêtre
+play_width  =  300   # largeur de la fenêtre de lecture ; 300/10 = 30 largeur par bloc
+play_height  =  600   # hauteur de la fenêtre de lecture ; 600/20 = 20 hauteur par bloc
+block_size  =  30   # taille du bloc
+
+top_left_x  = ( s_width  -  play_width ) //  2
+top_left_y  =  s_height  -  play_height  -  50
+
+chemin du fichier  =  '/Users/rajat/PycharmProjects/Tetris/highscore.txt'
+fontpath  =  '/Users/rajat/PycharmProjects/Tetris/arcade.ttf'
+fontpath_mario  =  '/Users/rajat/PycharmProjects/Tetris/mario.ttf'
+
+# formats de formes
+
+S  = [[ '.....' ,
+      '.....' ,
+      '..00.' ,
+      '.00..' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '..00.' ,
+      '...0.' ,
+      '.....' ]]
+
+Z  = [[ '.....' ,
+      '.....' ,
+      '.00..' ,
+      '..00.' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '.00..' ,
+      '.0...' ,
+      '.....' ]]
+
+Je  = [[ '.....' ,
+      '..0..' ,
+      '..0..' ,
+      '..0..' ,
+      '..0..' ],
+     [ '.....' ,
+      '0000.' ,
+      '.....' ,
+      '.....' ,
+      '.....' ]]
+
+O  = [[ '.....' ,
+      '.....' ,
+      '.00..' ,
+      '.00..' ,
+      '.....' ]]
+
+J  = [[ '.....' ,
+      '.0...' ,
+      '.000.' ,
+      '.....' ,
+      '.....' ],
+     [ '.....' ,
+      '..00.' ,
+      '..0..' ,
+      '..0..' ,
+      '.....' ],
+     [ '.....' ,
+      '.....' ,
+      '.000.' ,
+      '...0.' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '..0..' ,
+      '.00..' ,
+      '.....' ]]
+
+L  = [[ '.....' ,
+      '...0.' ,
+      '.000.' ,
+      '.....' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '..0..' ,
+      '..00.' ,
+      '.....' ],
+     [ '.....' ,
+      '.....' ,
+      '.000.' ,
+      '.0...' ,
+      '.....' ],
+     [ '.....' ,
+      '.00..' ,
+      '..0..' ,
+      '..0..' ,
+      '.....' ]]
+
+T  = [[ '.....' ,
+      '..0..' ,
+      '.000.' ,
+      '.....' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '..00.' ,
+      '..0..' ,
+      '.....' ],
+     [ '.....' ,
+      '.....' ,
+      '.000.' ,
+      '..0..' ,
+      '.....' ],
+     [ '.....' ,
+      '..0..' ,
+      '.00..' ,
+      '..0..' ,
+      '.....' ]]
+
+# index représente la forme
+formes  = [ S , Z , I , O , J , L , T ]
+shape_colors  = [( 0 , 255 , 0 ), ( 255 , 0 , 0 ), ( 0 , 255 , 255 ), ( 255 , 255 , 0 ), ( 255 , 165 , 0 ), ( 0 , 0 , 255 ) , ( 128 , 0 , 128 )]
+
+
+# classe pour représenter chacune des pièces
+
+
+classe  Morceau ( objet ):
+    def  __init__ ( self , x , y , shape ):
+        soi . x  =  x
+        soi . y  =  y
+        soi . forme  =  forme
+        soi . color  =  shape_colors [ formes . index ( forme )]   # choisissez la couleur dans la liste shape_color
+        soi . rotation  =  0   # choisit la rotation en fonction de l'index
+
+
+# initialise la grille
+def  create_grid ( lock_pos = {}):
+    grid  = [[( 0 , 0 , 0 ) for  x  in  range ( col )] for  y  in  range ( row )]   # grille représentée tuples rgb
+
+    # dictionnaire de lock_positions
+    # (x,y):(r,g,b)
+    pour  y  dans la  plage ( ligne ):
+        pour  x  dans la  plage ( col ):
+            if ( x , y ) dans  lock_pos :
+                couleur  =  lock_pos [
+                    ( x , y )]   # récupère la valeur color (r,g,b) à partir du dictionnaire lock_positions en utilisant la clé (x,y)
+                grille [ y ][ x ] =  couleur   # définit la position de la grille sur la couleur
+
+     grille de retour
+
+
+def  convert_shape_format ( pièce ):
+    postes  = []
+    shape_format  =  pièce . forme [ pièce . rotation  %  len ( pièce . forme )]   # obtenir la forme pivotée souhaitée à partir de la pièce
+
+    '''
+    par exemple
+       ['.....',
+        '.....',
+        '..00.',
+        '.00..',
+        '.....']
+    '''
+    pour  i , ligne  dans  énumérer ( shape_format ):   # i donne index; la ligne donne une chaîne
+        row  =  list ( line )   # crée une liste de caractères à partir de la chaîne
+        pour  j , colonne  dans  enumerate ( row ):   # j donne l'index de char; la colonne donne le caractère
+            si  colonne  ==  '0' :
+                postes . ajouter (( pièce . x  +  j , pièce . y  +  i ))
+
+    pour  i , pos  dans  énumérer ( positions ):
+        positions [ i ] = ( pos [ 0 ] -  2 , pos [ 1 ] -  4 )   # décalage selon l'entrée donnée avec point et zéro
+
+     postes de retour
+
+
+# vérifie si la position actuelle de la pièce dans la grille est valide
+def  valid_space ( pièce , grille ):
+    # fait une liste 2D de tous les (x,y) possibles
+    accepté_pos  = [[( x , y ) pour  x  dans la  plage ( col ) si  grille [ y ][ x ] == ( 0 , 0 , 0 )] pour  y  dans la  plage ( rangée )]
+    # supprime les sous-listes et place (x,y) dans une seule liste ; recherche plus facile
+    Accept_pos  = [ x  pour l'  article  dans  Accept_pos  pour  x  dans l'  article ]
+
+    formatted_shape  =  convert_shape_format ( pièce )
+
+    pour  pos  dans  formatted_shape :
+        si  pos  pas  dans  accepted_pos :
+            si  pos [ 1 ] >=  0 :
+                retourner  Faux
+    retourner  vrai
+
+
+# vérifie si la pièce n'est pas en carton
+def  check_lost ( positions ):
+    pour  pos  dans des  positions :
+        x , y  =  pos
+        si  y  <  1 :
+            retourner  vrai
+    retourner  Faux
+
+
+# choisit une forme au hasard dans la liste des formes
+def  get_shape ():
+    retour  Piece ( 5 , 0 , aléatoire . choix ( formes ))
+
+
+# dessine du texte au milieu
+def  draw_text_middle ( texte , taille , couleur , surface ):
+    font  =  pygame . police . Police ( chemin de la police , taille , bold = False , italic = True )
+    étiquette  =  police . rendu ( texte , 1 , couleur )
+
+    superficiel . blit ( label , ( top_left_x  +  play_width / 2  - ( label . get_width () / 2 ), top_left_y  +  play_height / 2  - ( label . get_height () / 2 )))
+
+
+# dessine les lignes de la grille pour le jeu
+def  draw_grid ( surface ):
+    r  =  g  =  b  =  0
+    grid_color  = ( r , g , b )
+
+    pour  i  dans la  plage ( ligne ):
+        # tracer des lignes horizontales grises
+        pygame . dessiner . line ( surface , grid_color , ( top_left_x , top_left_y  +  i  *  block_size ),
+                         ( top_left_x  +  play_width , top_left_y  +  i  *  block_size ))
+        pour  j  dans la  plage ( col ):
+            # tracer des lignes verticales grises
+            pygame . dessiner . line ( surface , grid_color , ( top_left_x  +  j  *  block_size , top_left_y ),
+                             ( top_left_x  +  j  *  block_size , top_left_y  +  play_height ))
+
+
+# effacer une ligne lorsqu'elle est remplie
+def  clear_rows ( grille , verrouillé ):
+    # besoin de vérifier si la ligne est claire, puis décalez une ligne sur deux au-dessus d'une
+    incrément  =  0
+    for  i  in  range ( len ( grid ) -  1 , - 1 , - 1 ):       # commencer à vérifier la grille à l'envers
+        grid_row  =  grid [ i ]                       # récupère la dernière ligne
+        if ( 0 , 0 , 0 ) pas  dans  grid_row :            # s'il n'y a pas d'espaces vides (c'est-à-dire des blocs noirs)
+            incrément  +=  1
+            # ajouter des positions à supprimer du verrouillage
+            index  =  i                            # index de ligne sera constant
+            pour  j  dans la  plage ( len ( grid_row )):
+                essaie :
+                    del  verrouillé [( j , i )]           # supprime tous les éléments verrouillés de la rangée du bas
+                sauf  ValueError :
+                    Continuez
+
+    # décaler chaque ligne d'un cran vers le bas
+    # supprimer la ligne du bas remplie
+    # ajouter une autre ligne vide en haut
+    # descendre d'une marche
+    si  incrément  >  0 :
+        # trie la liste verrouillée en fonction de la valeur y dans (x,y) puis inverse
+        # inversé car sinon ceux du haut écraseront ceux du bas
+        pour  clé  dans  triée ( liste ( bloquée ), clé = lambda  a : un [ 1 ]) [:: - 1 ]:
+            x , y  =  clé
+            if  y  <  index :                        # si la valeur y est supérieure à l'index supprimé
+                new_key  = ( x , y  +  incrément )     # décaler la position vers le bas
+                verrouillé [ new_key ] =  verrouillé . pop ( touche )
+
+     incrément de retour
+
+
+# dessine la pièce à venir
+def  draw_next_shape ( pièce , surface ):
+    font  =  pygame . police . Police ( chemin de la police , 30 )
+    étiquette  =  police . render ( 'Forme suivante' , 1 , ( 255 , 255 , 255 ))
+
+    start_x  =  top_left_x  +  play_width  +  50
+    start_y  =  top_left_y  + ( play_height  /  2  -  100 )
+
+    shape_format  =  pièce . forme [ pièce . rotation  %  len ( pièce . forme )]
+
+    pour  i , ligne  dans  énumérer ( shape_format ):
+        ligne  =  liste ( ligne )
+        pour  j , colonne  dans  énumérer ( ligne ):
+            si  colonne  ==  '0' :
+                pygame . dessiner . rect ( surface , pièce . couleur , ( start_x  +  j * block_size , start_y  +  i * block_size , block_size , block_size ), 0 )
+
+    superficiel . blit ( label , ( start_x , start_y  -  30 ))
+
+    # pygame.display.update()
+
+
+# dessine le contenu de la fenêtre
+def  draw_window ( surface , grille , score = 0 , last_score = 0 ):
+    superficiel . remplir (( 0 , 0 , 0 ))   # remplir la surface de noir
+
+    pygame . police . init ()   # initialise la police
+    font  =  pygame . police . Police ( fontpath_mario , 65 , bold = True )
+    étiquette  =  police . render ( 'TETRIS' , 1 , ( 255 , 255 , 255 ))   # initialiser le texte 'Tetris' avec du blanc
+
+    superficiel . blit ( label , (( top_left_x  +  play_width  /  2 ) - ( label . get_width () /  2 , 30 ))   # place la surface au centre de la fenêtre
+
+    # score actuel
+    font  =  pygame . police . Police ( chemin de la police , 30 )
+    étiquette  =  police . render ( 'SCORE '  +  str ( score ) , 1 , ( 255 , 255 , 255 ))
+
+    start_x  =  top_left_x  +  play_width  +  50
+    start_y  =  top_left_y  + ( play_height  /  2  -  100 )
+
+    superficiel . blit ( label , ( start_x , start_y  +  200 ))
+
+    # dernière note
+    label_hi  =  police . render ( 'HIGHSCORE '  +  str ( last_score ), 1 , ( 255 , 255 , 255 ))
+
+    start_x_hi  =  top_left_x  -  240
+    start_y_hi  =  top_left_y  +  200
+
+    superficiel . blit ( label_hi , ( start_x_hi  +  20 , start_y_hi  +  200 ))
+
+    # dessiner le contenu de la grille
+    pour  i  dans la  plage ( ligne ):
+        pour  j  dans la  plage ( col ):
+            # pygame.draw.rect()
+            # dessiner une forme rectangulaire
+            # rect(Surface, couleur, Rect, largeur=0) -> Rect
+            pygame . dessiner . rect ( surface , grille [ i ][ j ],
+                             ( top_left_x  +  j  *  block_size , top_left_y  +  i  *  block_size , block_size , block_size ), 0 )
+
+    # tracer des lignes de quadrillage verticales et horizontales
+    draw_grid ( surface )
+
+    # dessinez une bordure rectangulaire autour de l'aire de jeu
+    border_color  = ( 255 , 255 , 255 )
+    pygame . dessiner . rect ( surface , border_color , ( top_left_x , top_left_y , play_width , play_height ), 4 )
+
+    # pygame.display.update()
+
+
+# mettre à jour le fichier txt de score avec un score élevé
+def  update_score ( new_score ):
+    score  =  get_max_score ()
+
+    avec  open ( chemin du fichier , 'w' ) comme  fichier :
+        si  nouveau_score  >  score :
+            fichier . écrire ( str ( nouveau_score ))
+        sinon :
+            fichier . écrire ( str ( score ))
+
+
+# obtenir le meilleur score du fichier
+def  get_max_score ():
+    avec  open ( chemin du fichier , 'r' ) comme  fichier :
+        lignes  =  fichier . readlines ()         # lit toutes les lignes et les met dans une liste
+        score  =  int ( lignes [ 0 ]. strip ())    # supprimer \n
+
+     note de retour
+
+
+def  main ( fenêtre ):
+    lock_positions  = {}
+    create_grid ( positions_verrouillées )
+
+    change_piece  =  Faux
+    exécuter  =  vrai
+    current_piece  =  get_shape ()
+    next_piece  =  get_shape ()
+    horloge  =  pygame . temps . Horloge ()
+    heure_automne  =  0
+    vitesse_de_chute  =  0.35
+    level_time  =  0
+    note  =  0
+    last_score  =  get_max_score ()
+
+    pendant la  course :
+        # besoin de créer constamment une nouvelle grille car les positions verrouillées changent toujours
+        grid  =  create_grid ( lock_positions )
+
+        # permet de fonctionner de la même manière sur chaque ordinateur
+        # ajoute le temps depuis le dernier tick() à fall_time
+        fall_time  +=  horloge . get_rawtime ()   # renvoie en millisecondes
+        level_time  +=  horloge . get_rawtime ()
+
+        horloge . tick ()   # met à jour l'horloge
+
+        if  level_time / 1000  >  5 :     # rend la difficulté plus difficile toutes les 10 secondes
+            level_time  =  0
+            if  fall_speed  >  0.15 :    # jusqu'à ce que la vitesse de chute soit 0.15
+                vitesse_de_chute  -=  0,005
+
+        si  fall_time  /  1000  >  fall_speed :
+            heure_automne  =  0
+            pièce_courante . y  +=  1
+            si  pas  valid_space ( current_piece , grille ) et  current_piece . y  >  0 :
+                pièce_courante . y  -=  1
+                # car ne vérifiant que le bas - soit atteint le bas, soit touché une autre pièce
+                # besoin de verrouiller la position de la pièce
+                # besoin de générer une nouvelle pièce
+                change_piece  =  Vrai
+
+        pour l'  événement  dans  pygame . événement . obtenir ():
+            si  événement . tapez  ==  pygame . QUITTER :
+                exécuter  =  Faux
+                pygame . afficher . quitter ()
+                quitter ()
+
+             événement elif . tapez  ==  pygame . KEYDOWN :
+                si  événement . clé  ==  pygame . K_LEFT :
+                    pièce_courante . x  -=  1   # déplacer la position x vers la gauche
+                    si  pas  valid_space ( current_piece , grille ):
+                        pièce_courante . x  +=  1
+
+                 événement elif . clé  ==  pygame . K_RIGHT :
+                    pièce_courante . x  +=  1   # déplacer la position x vers la droite
+                    si  pas  valid_space ( current_piece , grille ):
+                        pièce_courante . x  -=  1
+
+                 événement elif . clé  ==  pygame . K_DOWN :
+                    # déplacer la forme vers le bas
+                    pièce_courante . y  +=  1
+                    si  pas  valid_space ( current_piece , grille ):
+                        pièce_courante . y  -=  1
+
+                 événement elif . clé  ==  pygame . K_UP :
+                    # faire pivoter la forme
+                    pièce_courante . rotation  =  pièce_courante . rotation  +  1  %  len ( current_piece . shape )
+                    si  pas  valid_space ( current_piece , grille ):
+                        pièce_courante . rotation  =  pièce_courante . rotation  -  1  %  len ( current_piece . shape )
+
+        piece_pos  =  convert_shape_format ( current_piece )
+
+        # dessiner la pièce sur la grille en donnant de la couleur aux emplacements des pièces
+        pour  i  dans la  plage ( len ( piece_pos )):
+            x , y  =  piece_pos [ i ]
+            si  y  >=  0 :
+                grille [ y ][ x ] =  pièce_courante . Couleur
+
+        if  change_piece :   # si la pièce est verrouillée
+            pour  pos  dans  piece_pos :
+                p  = ( pos [ 0 ], pos [ 1 ])
+                positions_verrouillées [ p ] =  pièce_courante . couleur        # ajoute la clé et la valeur dans le dictionnaire
+            current_piece  =  next_piece
+            next_piece  =  get_shape ()
+            change_piece  =  Faux
+            score  +=  clear_rows ( grid , lock_positions ) *  10     # incrémente le score de 10 pour chaque ligne effacée
+            update_score ( score )
+
+            si  last_score  <  score :
+                last_score  =  score
+
+        draw_window ( fenêtre , grille , score , last_score )
+        draw_next_shape ( next_piece , fenêtre )
+        pygame . afficher . mettre à jour ()
+
+        if  check_lost ( lock_positions ):
+            exécuter  =  Faux
+
+    draw_text_middle ( 'Vous avez perdu' , 40 , ( 255 , 255 , 255 ), fenêtre )
+    pygame . afficher . mettre à jour ()
+    pygame . temps . délai ( 2000 )   # attendre 2 secondes
+    pygame . quitter ()
+
+
+def  main_menu ( fenêtre ):
+    exécuter  =  vrai
+    pendant la  course :
+        draw_text_middle ( 'Appuyez sur n'importe quelle touche pour commencer' , 50 , ( 255 , 255 , 255 ), fenêtre )
+        pygame . afficher . mettre à jour ()
+
+        pour l'  événement  dans  pygame . événement . obtenir ():
+            si  événement . tapez  ==  pygame . QUITTER :
+                exécuter  =  Faux
+             événement elif . tapez  ==  pygame . KEYDOWN :
+                principal ( fenêtre )
+
+    pygame . quitter ()
+
+
+if  __name__  ==  '__main__' :
+    gagner  =  pygame . afficher . set_mode (( s_width , s_height ))
+    pygame . afficher . set_caption ( 'Tetris' )
+
+    main_menu ( gagner )   # démarrer le jeu
