@@ -35,6 +35,16 @@ class TestDecrement(unittest.TestCase):
 class TestAjoute(unittest.TestCase):
     def test_ajoute(self):
         i = 0
+        self.assertEqual(calculateur.ajoute(i, 4), 4)
+
+class TestAjoute(unittest.TestCase):
+    def test_ajoute(self):
+        i = 0
+        self.assertEqual(calculateur.ajoute(i, 5), 5)
+
+class TestAjoute(unittest.TestCase):
+    def test_ajoute(self):
+        i = 0
         self.assertEqual(calculateur.ajoute(i, 5), 5)
 
 class TestSoustrait(unittest.TestCase):
