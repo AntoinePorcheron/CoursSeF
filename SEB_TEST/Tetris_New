@@ -1,0 +1,255 @@
+
+# SEF : 18-01-2022
+def Main():
+    # Variable globale qui seront en paramètre en phase 2
+    global X_TAB, Y_TAB, Tableau_Principal, Taille_Case, Grille_Principale
+    # Taille du tableau
+    X_TAB = 10
+    Y_TAB = 20
+    # Taille Fenetre
+    X_FEN = 500
+    Y_FEN = 500
+    # Taille d'un carré en pixel
+    Taille_Case = 20
+
+    # Variable Globale
+    Tableau_Principal = []
+    Grille_Principale = []
+
+if __name__ == "__main__" :
+    Main()
+# SEF : 18-01-2022
+
+
+
+import numpy as np
+import Global as Global
+
+# SEF : du 12-01-2022 au 13-01-2022
+# Fonction qui créé un nouveau tableau
+def Create_Tableau(X, Y,Type):
+    try:
+        TAB_P = np.zeros((X,Y), Type)
+        dim = TAB_P.shape
+        print ("Création TAB_P vide OK")
+        print("nb de lignes de TAB_P = " + str(dim[0]))
+        print("nb de colonnes de TAB_P = " + str(dim[1]))
+        return TAB_P
+    except :
+        print('Erreur de Create_Tableau: ')
+# fSEF : du 12-01-2022 au 13-01-2022
+
+# SEF : du 12-01-2022 au 13-01-2022
+# Fonction qui écrit une valeur dans un tableau en X/Y
+def Ajout_Val_Tableau(TAB_P, X=10, Y=20, Valeur=str):
+    try:
+        print ("Ajout Valeur " + str(Valeur) + " en : (" + str(X) + "," + str(Y) + ")")
+        TAB_P[X][Y] = Valeur
+    except :
+        print('Erreur de Ajout_Val_Tableau : ')
+# fSEF : du 12-01-2022 au 13-01-2022
+
+# SEF : 26-01-2022
+# Fonction Init
+def Init_Tableau(TAB_P, X=10, Y=20, Valeur="X"):
+    try:
+        for i in range(Y):
+            Ajout_Val_Tableau(TAB_P, 0 ,i, "X")
+            Ajout_Val_Tableau(TAB_P, X-1 ,i, "X")
+        for i in range(X):
+            Ajout_Val_Tableau(TAB_P, i ,0, "X")
+        #print (TAB_P)
+    except IndexError as e:
+        print('Erreur Init_Tableau: ', e)
+# fSEF : 26-01-2022
+
+
+# SEF : 01-02-2022
+# Fonction Rafraichit_tableau
+def MAJ_Tableau(TAB_P, Canvas_P, X_TAB_P, Y_TAB_P, Taille_P):
+    try:
+        for i in range(Global.X_TAB):
+            for j in range(Global.Y_TAB):
+                #Canvas_P.itemconfigure(txt, text='')
+                Canvas_P.delete('ALL')
+                #print('Grille_Principale : ' + str(Global.Grille_Principale))
+                txt = Canvas_P.create_text(X_TAB_P * Taille_P - (i+1)*Taille_P + Taille_P/2, 
+                                                                     Y_TAB_P * Taille_P - (j+1)*Taille_P + Taille_P/2, 
+                                                                     text=TAB_P[i][j], font="Arial 16 italic", fill="blue")
+                #print('txt : '+ str(i) + "/" + str(j) + ":" + str(txt))
+                #Global.Grille_Principale[i][j] = txt
+                #print('txt : '+ str(i) + "/" + str(j) + ":" + str(Global.Grille_Principale[i][j]))
+    except IndexError as e:
+        print('Erreur MAJ_Tableau: ', e)
+# fSEF : 26-01-2022
+
+
+# SEF : 25-01-2022
+# Fonction exemple simple pour test unitaire
+def incremente(v):
+    return v + 1
+
+def ajoute(v, n):
+    for i in range(n):
+        v = incremente(v)
+    return v
+# fSEF : 25-01-2022
+
+# SEF : du 17-01-2022 au 31-01-2022
+# Fonction Init_Algo
+def Init_Algo():
+    try:
+        Global.Tableau_Principal = Create_Tableau(Global.X_TAB, Global.Y_TAB, str)
+        print (Global.Tableau_Principal)
+        Init_Tableau (Global.Tableau_Principal, Global.X_TAB, Global.Y_TAB, "X")
+        print (Global.Tableau_Principal)
+    except IndexError as e:
+        print('Erreur Init_Algo: ', e)
+# fSEF : du 17-01-2022 au 31-01-2022
+
+# SEF : 18-01-2022
+def Main():
+    Global.Main ()
+    Global.Grille_Principale = np.zeros((Global.X_TAB,Global.Y_TAB), str)
+    Init_Algo ()
+
+if __name__ == "__main__" :
+    print ("Main Fonction")
+    Main()
+# fSEF : 18-01-2022
+
+# Projet-Tetris
+import unittest
+import Liste_Fonctions
+
+# SEF : 25-01-2022
+class TestIncremente(unittest.TestCase):
+    def test_incremente(self):
+        i = 0
+        self.assertEqual(Liste_Fonctions.incremente(i), 1)
+
+class TestAjoute(unittest.TestCase):
+    def test_ajoute(self):
+        i = 0
+        self.assertEqual(Liste_Fonctions.ajoute(i, 4), 4)
+        # Renvoie Faux : self.assertEqual(Liste_Fonctions.ajoute(i, 4), 5)
+# fSEF : 25-01-2022
+
+# SEF : 25-01-2022
+if __name__ == "__main__":
+    unittest.main()
+# fSEF : 25-01-2022
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan  5 19:57:03 2022
+
+@author: Marion, Sébastien et Sébastien
+"""
+
+# SEF : du 12-01-2022 au 13-01-2022
+import Fenetres as Fen
+import Global as Global
+# fSEF : du 12-01-2022 au 13-01-2022
+
+# SEF : 18-01-2022
+def Main():
+    Global.Main ()
+    Fen.Main ()
+    assert True, "Text si vrai"
+    assert False, "Text si faux"
+
+if __name__ == "__main__" :
+    print ("Main principal")
+    Main()
+# SEF : 18-01-2022
+
+
+
+import tkinter
+import ctypes # An included library with Python install.   
+import Liste_Fonctions as Lst_Fct
+import Global as Global
+
+
+# SEF : du 12-01-2022 au 01-02-2022
+def Fen_Main_Tkinter():
+    try:
+
+        # Lancement de l'algo
+        Lst_Fct.Init_Algo ()
+
+        # Création de la fenêtre
+        Fen_Princip = tkinter.Tk()
+        Fen_Princip.geometry("500x500")
+        Fen_Princip.title ("Tétris Games")
+
+        # Fenetre 
+        Label_entete = tkinter.Label(Fen_Princip, text="Hello World")
+        Label_entete.place(x=250,y=5)
+
+        ##----- Création du canevas -----##
+        Fen_canvas = tkinter.Canvas(Fen_Princip, 
+                                    width=Global.X_TAB * Global.Taille_Case, 
+                                    height=Global.Y_TAB * Global.Taille_Case, 
+                                    background='black')
+        Lst_Fct.MAJ_Tableau(Global.Tableau_Principal, 
+                            Fen_canvas, Global.X_TAB, 
+                            Global.Y_TAB, Global.Taille_Case)
+        Fen_canvas.place(x=5,y=20)
+
+        ##----- MAJ du canevas -----##
+        #Lst_Fct.Ajout_Val_Tableau(Global.Tableau_Principal, 5, 10, "C")
+        #Lst_Fct.MAJ_Tableau(Global.Tableau_Principal, Fen_canvas, Global.X_TAB, Global.Y_TAB, Global.Taille_Case)
+        #Lst_Fct.Btn_Ajout_Val_Tableau(Global.Tableau_Principal,Fen_canvas,int(5),int(10),str("C"),Global.Taille_Case)
+
+        ## Ajout d'un bouton Fermer ##
+        Bouton_Quit=tkinter.Button(Fen_Princip, text="Fermer", command=Fen_Princip.quit)
+        Bouton_Quit.place(x=450,y=470)
+
+        ## Ajout d'un bouton Ajoute ##
+        Label_Pos_X = tkinter.Label(Fen_Princip, text="Position X :")
+        Label_Pos_X.place(x=250,y=300)
+        Txt_Pos_X = tkinter.Entry(Fen_Princip)
+        Txt_Pos_X.place(x=350,y=300)
+
+        Label_Pos_Y = tkinter.Label(Fen_Princip, text="Position Y :")
+        Label_Pos_Y.place(x=250,y=320)
+        Txt_Pos_Y = tkinter.Entry(Fen_Princip)
+        Txt_Pos_Y.place(x=350,y=320)
+
+        Label_Texte = tkinter.Label(Fen_Princip, text="Position Texte :")
+        Label_Texte.place(x=250,y=340)
+        Txt_Texte = tkinter.Entry(Fen_Princip)
+        Txt_Texte.place(x=350,y=340)
+
+        Bouton_Ajoute=tkinter.Button(Fen_Princip, 
+                                     text="Ajoute", 
+                                     command=lambda:[Lst_Fct.Ajout_Val_Tableau(Global.Tableau_Principal,
+                                                                               Global.X_TAB-int(Txt_Pos_X.get()),
+                                                                               int(Txt_Pos_Y.get())-1,
+                                                                               Txt_Texte.get()),
+                                                    Lst_Fct.MAJ_Tableau(Global.Tableau_Principal,
+                                                                        Fen_canvas,
+                                                                        Global.X_TAB,
+                                                                        Global.Y_TAB,
+                                                                        Global.Taille_Case)])
+        Bouton_Ajoute.place(x=350,y=360)
+
+        Fen_Princip.mainloop()
+
+
+    except ValueError as e:
+        print('Erreur Fen_Main_Tkinter: ', e)
+
+# fSEF : du 12-01-2022 au 01-02-2022
+
+# SEF : 18-01-2022
+def Main():
+    Global.Main ()
+    Fen_Main_Tkinter ()
+
+if __name__ == "__main__" :
+    print ("Main Fenetre")
+    Main()
+# fSEF : 18-01-2022
